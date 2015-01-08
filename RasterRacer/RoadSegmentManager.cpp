@@ -34,7 +34,7 @@ void RoadSegmentManager::Update(float distanceMoved)
 	UpdateSegmentQueue();
 }
 
-RoadSegmentManager::RoadSegmentIterator RoadSegmentManager::GetSegmentForZ(float z, RoadSegmentIterator last) const
+RoadSegmentIterator RoadSegmentManager::GetSegmentForZ(float z, RoadSegmentIterator last) const
 {
 	RoadSegmentIterator next = last;
 	++next;

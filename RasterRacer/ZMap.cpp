@@ -1,44 +1,18 @@
 #include "stdafx.h"
 #include "ZMap.h"
 
-
-std::unique_ptr<ZMap> ZMap::sInstance(nullptr);
-const ZMap& ZMap::GetInstance()
-{
-	return *sInstance;
-}
-
-void ZMap::Initialise(int screenHeight)
-{
-	sInstance.reset(new ZMap(screenHeight));
-}
-
-void ZMap::Terminate()
-{
-	sInstance.reset(nullptr);
-}
-
-
 ZMap::ZMap(int horizonHeight)
 : mHorizonHeight(horizonHeight)
 , mZ(new float[horizonHeight])
 , mScale(new float[horizonHeight])
+, mScaleCorrection((-1.0f / float((0.28f * float(mHorizonHeight)) - ((float)mHorizonHeight * mFarPlaneDistanceMultiplier))))
 {
-	const float farPlaneDistanceMultiplier = 1.04f;
-	const float maxZDistance = 1200.0f;
-	for (int i = 0; i < horizonHeight; ++i)
-	{
-		mZ[i] = -1.0f / float(float(i) - ((float)mHorizonHeight * farPlaneDistanceMultiplier)) * maxZDistance;
-		mScale[i] = 1.0f / (-1.0f / float(float(i) - ((float)mHorizonHeight * farPlaneDistanceMultiplier)));
-	}
-	const int normalisedScalePercent = int(0.28f * float(mHorizonHeight));
-	const float correct = 1.0f / mScale[normalisedScalePercent];
-	for (int i = 0; i < horizonHeight; ++i)
-	{
-		mScale[i] *= correct;
-		
-	}
 
+	for (int i = 0; i < horizonHeight; ++i)
+	{
+		mZ[i] = CalculateZ((float)i);
+		mScale[i] = CalculateScale((float)i);
+	}
 
 }
 
@@ -46,4 +20,14 @@ ZMap::ZMap(int horizonHeight)
 ZMap::~ZMap()
 {
 	
+}
+
+float ZMap::CalculateZ(float zIndex) const
+{
+	return -1.0f / (float(zIndex) - ((float)mHorizonHeight * mFarPlaneDistanceMultiplier)) * mMaxZDistance;
+}
+
+float ZMap::CalculateScale(float zIndex) const
+{
+	return mScaleCorrection * (1.0f / (-1.0f / float(zIndex - ((float)mHorizonHeight * mFarPlaneDistanceMultiplier))));
 }

@@ -3,13 +3,12 @@
 #include <vector>
 #include <memory>
 #include <list>
-class RoadSegment;
+#include "RoadSegmentFwd.h"
 
 class RoadSegmentManager
 {
 public:
-	typedef std::list<RoadSegment*> SegmentQueue;
-	typedef SegmentQueue::const_iterator RoadSegmentIterator;
+
 	const float mMaxZ;
 	RoadSegmentManager(float maxZ);
 	~RoadSegmentManager();
@@ -22,7 +21,7 @@ public:
 	
 private:
 	std::vector<std::unique_ptr<RoadSegment>>	mSegments;
-	SegmentQueue	mSegmentQueue;
+	RoadSegmentQueue	mSegmentQueue;
 	unsigned int mIndexOfNextSegment;
 };
 

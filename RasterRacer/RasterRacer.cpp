@@ -38,18 +38,9 @@ void UpdateTextureOffset(float speed)
 }
 
 static bool keys[255];
-
+std::unique_ptr<ZMap> zMap;
 std::unique_ptr<RoadUpdater> roadUpdater;
-void InitRacer()
-{
-	ZMap::Initialise(300);
-	roadUpdater.reset(new RoadUpdater((int)HORIZON_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH, ZMap::GetInstance()));
-}
 
-void TerminateRacer()
-{
-	ZMap::Terminate();
-}
 
 bool initGL()
 {
@@ -103,7 +94,7 @@ void update()
 
 void render()
 {
-	const float h = float(ZMap::GetInstance().mHorizonHeight);
+	const float h = float(HORIZON_HEIGHT);
 	const float w = float(SCREEN_WIDTH);
 	//Clear color buffer5
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -140,12 +131,12 @@ void render()
 
 
 			float y = ((float(h - roadParts[i].screenYInt) / h));
-			float maxY = y - ((float(roadParts[i].offsetY) / h));
-			glBegin(GL_QUADS);
+			//float maxY = y - ((float(roadParts[i].offsetY) / h));
+			glBegin(GL_LINES);
 			glVertex2f(-1.0f, y);
 			glVertex2f(1.0f, y);
-			glVertex2f(1.0f, maxY);
-			glVertex2f(-1.0f, maxY);
+			//glVertex2f(1.0f, maxY);
+			//glVertex2f(-1.0f, maxY);
 			glEnd();
 
 			glPushMatrix();
@@ -154,20 +145,20 @@ void render()
 			glScalef(roadParts[i].scale, 1.0f, 1.0f);
 			glColor3f(roadColour[roadParts[i].roadFrame][0], roadColour[roadParts[i].roadFrame][1], roadColour[roadParts[i].roadFrame][2]);
 			
-			for (int j = 1; j <= roadParts[i].offsetY; ++j)
-			{
+			//for (int j = 1; j <= roadParts[i].offsetY; ++j)
+			//{
 
 				float minX = -1.0f;
 				float maxX = 1.0f;
-				y = ((float(h -( float(roadParts[i].screenYInt) + (j-1))) / h));
-				maxY = y - (1 / h);
-				glBegin(GL_QUADS);
+				y = ((float(h -( float(roadParts[i].screenYInt))) / h));
+				//maxY = y - (1 / h);
+				glBegin(GL_LINES);
 				glVertex2f(minX, y);
 				glVertex2f(maxX, y);
-				glVertex2f(maxX, maxY);
-				glVertex2f(minX, maxY);
+				//glVertex2f(maxX, maxY);
+				//glVertex2f(minX, maxY);
 				glEnd();
-			}
+			//}
 			
 			glPopMatrix();
 		}
@@ -182,7 +173,8 @@ void runMainLoop(int val);
 
 int main(int argc, char* args[])
 {
-	InitRacer();
+	zMap.reset(new ZMap(int(HORIZON_HEIGHT)));
+	roadUpdater.reset(new RoadUpdater((int)HORIZON_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH, *zMap));
 
 	//Initialize FreeGLUT
 	glutInit(&argc, args);
@@ -211,7 +203,6 @@ int main(int argc, char* args[])
 	//Start GLUT main loop
 	glutMainLoop();
 
-	TerminateRacer();
 	return 0;
 }
 

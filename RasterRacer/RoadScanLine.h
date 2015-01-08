@@ -8,6 +8,5 @@ struct RoadScanLine
 	float scale;
 
 	int screenYInt;
-	int offsetY;
 	int roadFrame;
 };

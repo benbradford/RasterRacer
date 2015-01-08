@@ -16,5 +16,6 @@
     <ClInclude Include="RoadSegmentManager.h" />
     <ClInclude Include="RoadUpdater.h" />
     <ClInclude Include="RoadScanLine.h" />
+    <ClInclude Include="RoadSegmentFwd.h" />
   </ItemGroup>
 </Project>

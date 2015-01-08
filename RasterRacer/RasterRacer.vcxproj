@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClInclude Include="RoadScanLine.h" />
     <ClInclude Include="RoadSegment.h" />
+    <ClInclude Include="RoadSegmentFwd.h" />
     <ClInclude Include="RoadSegmentManager.h" />
     <ClInclude Include="RoadUpdater.h" />
     <ClInclude Include="ZMap.h" />

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "RoadSegmentFwd.h"
 
 class RoadSegmentManager;
 struct RoadScanLine;
@@ -8,11 +9,11 @@ class ZMap;
 class RoadUpdater
 {
 public:
-	
 
 	const int mHorizonHeight;
 	const int mScreenHeight;
 	const int mScreenWidth;
+	const float mScaleZero;
 
 	RoadUpdater(const int horizonHeight, const int screenHeight, const int screenWidth, const ZMap& zMap);
 	~RoadUpdater();
@@ -28,6 +29,8 @@ private:
 	float										mRoadTextureOffset;
 	int											mNumScanLines;
 
+	void PopulateScanLines(int zIndex, int &numScanLines, float screenX, float screenY, float previousY);
 	void UpdateTextureOffset(float speed);
+	void UpdateDeltas(int zIndex, RoadSegmentIterator& segmentX, RoadSegmentIterator& segmentY, float& screenX, float& turnDelta, float& dDY, float& screenY, float perspectiveDX);
 };
 
