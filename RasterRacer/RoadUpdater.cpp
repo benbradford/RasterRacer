@@ -4,6 +4,7 @@
 #include "RoadSegmentManager.h"
 #include "RoadSegment.h"
 #include "ZMap.h"
+#include <assert.h>
 
 RoadUpdater::RoadUpdater(const int horizonHeight, const int screenHeight, const int screenWidth, const ZMap& zMap)
 : mHorizonHeight(horizonHeight)
@@ -11,7 +12,7 @@ RoadUpdater::RoadUpdater(const int horizonHeight, const int screenHeight, const 
 , mScreenWidth(screenWidth)
 , mScaleZero(zMap.GetScale(0))
 , mZMap(zMap)
-, mScanLines(new RoadScanLine[screenHeight])
+, mScanLines(new RoadScanLine[mScreenHeight])
 , mXSegmentManager(new RoadSegmentManager(zMap.GetMaxZ()))
 , mYSegmentManager(new RoadSegmentManager(zMap.GetMaxZ()))
 , mRoadTextureOffset(0.0f)
@@ -72,7 +73,7 @@ void RoadUpdater::Update(float movementSpeed, float playerX)
 	float dDY = 0;
 	
 	mNumScanLines = 0;
-	for (int zIndex = 0; zIndex < mHorizonHeight; ++zIndex, ++mNumScanLines)
+	for (int zIndex = 0; zIndex < mHorizonHeight && mNumScanLines < mScreenHeight; ++zIndex)
 	{	
 		
 		if (screenY < smallestScreenY)
@@ -81,7 +82,8 @@ void RoadUpdater::Update(float movementSpeed, float playerX)
 		}
 		else
 		{
-			mScanLines[zIndex].draw = false;
+			
+			mScanLines[mNumScanLines++].draw = false;
 		}
 
 		previousY = screenY;
@@ -90,6 +92,7 @@ void RoadUpdater::Update(float movementSpeed, float playerX)
 			smallestScreenY = screenY;
 
 		UpdateDeltas(zIndex, segmentX, segmentY, screenX, turnDelta, dDY, screenY, perspectiveDX);
+
 
 	}
 
@@ -115,23 +118,39 @@ void RoadUpdater::PopulateScanLines(int zIndex, int &numScanLines, float screenX
 {
 	const float z = mZMap.GetZ(zIndex);
 	const float scale = mZMap.GetScale(zIndex);
-
-	RoadScanLine& road = mScanLines[numScanLines];
 	
-	if (screenY < int(previousY) - 1)
+	
+	if (zIndex > 0 && screenY < int(previousY) - 1)
 	{
 		// :TODO: create some new scanLines
 		const int offsetY = int(previousY) - int(screenY);
-		road.draw = true;
-		road.screenYInt = int(screenY);
-		road.screenX = screenX;
-		road.scale = scale;
-		road.roadFrame = 1;
-		if ((int(z + mRoadTextureOffset) % 4) >= 2)
-			road.roadFrame = 0;
+
+		const float lastScreenX = mScanLines[mNumScanLines - 1].screenX;
+		const float moveDelta = 1.0f / (offsetY);
+		float currentDelta = moveDelta;
+		float adjustedZIndex = float(zIndex);// float(zIndex - 1) + moveDelta;
+		for (int i = 0; i < offsetY && numScanLines < mScreenHeight; ++i)
+		{
+			RoadScanLine& road = mScanLines[numScanLines++];
+			const float adjustedZ = mZMap.CalculateZ(adjustedZIndex);
+
+			const float currentX = (lastScreenX + ((screenX - lastScreenX) * currentDelta));
+			const float currentScale = mZMap.CalculateScale(adjustedZIndex);
+			road.draw = true;
+			road.screenYInt = int(screenY + i);
+			road.screenX = currentX;
+			road.scale = currentScale;
+			road.roadFrame = 1;
+			if ((int(adjustedZ + mRoadTextureOffset) % 4) >= 2)
+				road.roadFrame = 0;
+			
+			currentDelta += moveDelta;
+			adjustedZIndex -= moveDelta;
+		}
 	}		
 	else
 	{
+		RoadScanLine& road = mScanLines[numScanLines++];
 
 		road.draw = true;
 		road.screenYInt = int(screenY);
@@ -142,6 +161,7 @@ void RoadUpdater::PopulateScanLines(int zIndex, int &numScanLines, float screenX
 			road.roadFrame = 0;
 
 	}
+
 }
 
 void RoadUpdater::UpdateTextureOffset(float speed)

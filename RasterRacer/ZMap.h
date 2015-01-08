@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <assert.h>
 
 
 class ZMap
@@ -10,8 +11,8 @@ public:
 	~ZMap();
 
 	
-	float GetZ(int screenY) const { return mZ[screenY]; }
-	float GetScale(int screenY) const { return mScale[screenY]; }
+	float GetZ(int screenY) const { assert(screenY < mHorizonHeight); return mZ[screenY]; }
+	float GetScale(int screenY) const { assert(screenY < mHorizonHeight); return mScale[screenY]; }
 	float GetMaxZ() const { return mZ[mHorizonHeight - 1]; }
 	float CalculateZ(float zIndex) const;
 	float CalculateScale(float zIndex) const;

@@ -111,13 +111,13 @@ void render()
 
 	static const float grassColour[2][3] =
 	{
-		{ 0.2f, 1.0f, 0.2f }, { 0.2f, 1.0f, 0.2f }
-		//{0.1f,0.96f,0.2f}
+		{ 0.2f, 1.0f, 0.2f },
+		{0.1f,0.96f,0.2f}
 	};
 	static const float roadColour[2][3] =
 	{
-		{ 0.7f, 0.7f, 0.7f }, { 0.7f, 0.7f, 0.7f },
-		//{ 0.6f, 0.6f, 0.6f }
+		{ 0.7f, 0.7f, 0.7f },
+		{ 0.6f, 0.6f, 0.6f }
 	};
 
 	int maxScanLines = 0;
@@ -131,36 +131,23 @@ void render()
 
 
 			float y = ((float(h - roadParts[i].screenYInt) / h));
-			//float maxY = y - ((float(roadParts[i].offsetY) / h));
+
 			glBegin(GL_LINES);
 			glVertex2f(-1.0f, y);
 			glVertex2f(1.0f, y);
-			//glVertex2f(1.0f, maxY);
-			//glVertex2f(-1.0f, maxY);
 			glEnd();
 
-			glPushMatrix();
-			
-			glTranslatef(-1.0f + ((roadParts[i].screenX / w) * 2.0f), 0.0f, 0.0f);
-			glScalef(roadParts[i].scale, 1.0f, 1.0f);
 			glColor3f(roadColour[roadParts[i].roadFrame][0], roadColour[roadParts[i].roadFrame][1], roadColour[roadParts[i].roadFrame][2]);
-			
-			//for (int j = 1; j <= roadParts[i].offsetY; ++j)
-			//{
 
-				float minX = -1.0f;
-				float maxX = 1.0f;
-				y = ((float(h -( float(roadParts[i].screenYInt))) / h));
-				//maxY = y - (1 / h);
-				glBegin(GL_LINES);
-				glVertex2f(minX, y);
-				glVertex2f(maxX, y);
-				//glVertex2f(maxX, maxY);
-				//glVertex2f(minX, maxY);
-				glEnd();
-			//}
-			
-			glPopMatrix();
+			const float centerX = -1.0f + ((roadParts[i].screenX / w) * 2.0f);
+			const float minX = centerX - roadParts[i].scale;
+			const float maxX = centerX + roadParts[i].scale;
+			glBegin(GL_LINES);
+			glVertex2f(minX, y);
+			glVertex2f(maxX, y);
+
+			glEnd();
+
 		}
 		
 	}
