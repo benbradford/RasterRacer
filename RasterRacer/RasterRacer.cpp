@@ -111,17 +111,22 @@ void render()
 
 	static const float grassColour[2][3] =
 	{
-		{ 0.2f, 1.0f, 0.2f },
-		{0.1f,0.96f,0.2f}
+		{ 0.2f, 1.0f, 0.2f }, { 0.2f, 1.0f, 0.2f }
+		//{0.1f,0.96f,0.2f}
 	};
 	static const float roadColour[2][3] =
 	{
-		{ 0.7f, 0.7f, 0.7f },
-		{ 0.6f, 0.6f, 0.6f }
+		{ 0.7f, 0.7f, 0.7f }, { 0.7f, 0.7f, 0.7f }
+		//{ 0.6f, 0.6f, 0.6f }
 	};
 
 	int maxScanLines = 0;
 	auto roadParts = roadUpdater->GetScanLines(maxScanLines);
+	float lastMinRoadX = 0.0f;
+	float lastMaxRoadX = 0.0f;
+	float lastRoadY = -1.0f;
+	float lastMinLineX = 0.0f;
+	float lastMaxLineX = 0.0f;
 	for (int i = maxScanLines-1; i >= 0; --i)
 	{
 		if (roadParts[i].draw)
@@ -131,10 +136,13 @@ void render()
 
 
 			float y = ((float(h - roadParts[i].screenYInt) / h));
+			
 
-			glBegin(GL_LINES);
+			glBegin(GL_QUADS);
 			glVertex2f(-1.0f, y);
 			glVertex2f(1.0f, y);
+			glVertex2f(1.0f, lastRoadY);
+			glVertex2f(-1.0f, lastRoadY);
 			glEnd();
 
 			glColor3f(roadColour[roadParts[i].roadFrame][0], roadColour[roadParts[i].roadFrame][1], roadColour[roadParts[i].roadFrame][2]);
@@ -142,12 +150,33 @@ void render()
 			const float centerX = -1.0f + ((roadParts[i].screenX / w) * 2.0f);
 			const float minX = centerX - roadParts[i].scale;
 			const float maxX = centerX + roadParts[i].scale;
-			glBegin(GL_LINES);
+			glBegin(GL_QUADS);
 			glVertex2f(minX, y);
 			glVertex2f(maxX, y);
-
+			glVertex2f(lastMaxRoadX, lastRoadY);
+			glVertex2f(lastMinRoadX, lastRoadY);
 			glEnd();
+			lastMinRoadX = minX;
+			lastMaxRoadX = maxX;
 
+			const float lineScale = roadParts[i].scale * 0.02f;
+			const float lineminX = centerX - lineScale;
+			const float linemaxX = centerX + lineScale;
+			if (roadParts[i].roadFrame)
+			{
+
+				glBegin(GL_QUADS);
+				
+				glColor3f(1.0f, 1.0f, 1.0f);
+				glVertex2f(lineminX, y);
+				glVertex2f(linemaxX, y);
+				glVertex2f(lastMaxLineX, lastRoadY);
+				glVertex2f(lastMinLineX, lastRoadY);
+				glEnd();
+			}
+			lastMinLineX = lineminX;
+			lastMaxLineX = linemaxX;
+			lastRoadY = y;
 		}
 		
 	}

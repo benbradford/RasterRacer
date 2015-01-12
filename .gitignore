@@ -49,3 +49,7 @@ Temporary Items
 *.obj
 *.tlog
 *.idb
+*.log
+RasterRacer/Debug/RasterRacer.log
+RasterRacer.v12.suo
+RasterRacer.sdf
