@@ -18,7 +18,7 @@ and may not be redistributed without written permission.*/
 //Screen Constants
 //
 
-const int SCREEN_WIDTH = 800;
+const int SCREEN_WIDTH = 400;
 const int SCREEN_HEIGHT = 600;
 const int SCREEN_FPS = 60;
 /*
@@ -253,17 +253,50 @@ void runMainLoop(int val)
 	glutKeyboardUpFunc(keyboardUp);
 }
 
+	struct Line {
+		float x;
+		float y;
+		float z;
+	};
+	std::vector<Line> lines;
+	
 
-
+	auto startPos = 0.0f;
 
 void update2() {
 
+	if (keys['w']) {
+
+		startPos++;
+	} else if (keys['s']) {
+
+		startPos--;
+	}
 }
 
 void render2() {
-	const float h = float(SCREEN_HEIGHT*0.5f);
-	const float w = float(SCREEN_WIDTH);
-	//Clear color buffer5
+
+
+   const auto camDepth = 0.84f;
+   const auto segL = 200;
+   const auto roadW = 2000;
+   const auto camX = 0.0f;
+   const auto width = SCREEN_WIDTH;
+   const auto height = SCREEN_HEIGHT;
+
+   static bool first = true;
+	if (first) {
+
+		
+		for (auto i = 0u; i < 200; ++i) {
+			
+				lines.push_back({0.01f,0.0f,float(i*segL)});
+		}
+		for (auto i = 0u; i < 300; ++i) {
+			
+				lines.push_back({-0.01f,0.0f,float(i*segL)});
+		}
+	}
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glBegin(GL_QUADS);
@@ -278,15 +311,66 @@ void render2() {
 
 	glColor3f(0.0f,1.0f,0.0f);	
 
+	glBegin(GL_QUADS);
+		glVertex2f(-1.0f, 0.2f);//SCREEN_HEIGHT);
+		glVertex2f(1.0f, 0.2f);//SCREEN_HEIGHT);
+		glVertex2f(1.0f, -1.0f);//SCREEN_HEIGHT);
+		glVertex2f(-1.0f, -1.0f);//SCREEN_HEIGHT);
+	glEnd();
+
+
+	glColor3f(0.5f,0.5f,0.5f);
+
+	auto lastX = 0.0f;
+	auto lastY = 0.0f;
+	auto lastW = 0.0f;
+	const auto camH = 1000.f;
+
+	auto x = 0.0f;
+	auto dx = 0.0f;
+	for (int i = startPos; i < startPos+300; ++i) {
+        
+		auto& line = lines[i];
+	
+		x+=dx;
+		dx+=line.x;
+	    	
+		const auto camZ = startPos*segL - (i >= lines.size() ? lines.size() * segL : 0.0f);
+		const auto scale = camDepth / ( line.z-camZ);
+		const auto worldX = width - (2.0f * ((1+scale * (x-camX)) * width/2));
+		const auto worldY = (1+scale*(line.y-camH)) * height/2;	
+		const auto worldW = scale * roadW * width/2;
+		
+		auto renderX = worldX;
+		auto renderY =  (worldY / 1600.0f);
+		auto renderW =  (worldW / 600.0f);
+		if (first) {
+
+			printf("%0.4f: %.4f, %.4f, %.4f |||| %.4f, %.4f, %.4f\n", scale, worldX, worldY, worldW, renderX, renderY, renderW);
+		}
+
+
+
+		if (i > 0) {
+		
+			//-1589.9999, 1680
+			
 			glBegin(GL_QUADS);
-			glVertex2f(-10.0f, 0.0f);//SCREEN_HEIGHT);
-			glVertex2f(10.0f, 0.0f);//SCREEN_HEIGHT);
-			glVertex2f(100.0f, -1.0f);//SCREEN_HEIGHT);
-			glVertex2f(-100.0f, -1.0f);//SCREEN_HEIGHT);
+				glVertex2f(renderX-renderW, renderY);
+				glVertex2f(renderX+renderW, renderY);
+				glVertex2f(lastX+lastW, lastY);
+				glVertex2f(lastX-lastW, lastY);
 			glEnd();
+		}
+
+		lastX = renderX;
+		lastY = renderY;
+		lastW = renderW;
+	}
 
 
 	glutSwapBuffers();
 
+	first = false;
 }
 
