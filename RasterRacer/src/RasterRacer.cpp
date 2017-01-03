@@ -8,17 +8,20 @@ and may not be redistributed without written permission.*/
 #include <GL/glu.h>
 #include <stdio.h>
 
-#include "ZMap.h"
+//#include "ZMap.h"
 #include <iostream>
 #include <vector>
 #include <array>
-#include "RoadUpdater.h"
-#include "RoadScanLine.h"
+//#include "RoadUpdater.h"
+//#include "RoadScanLine.h"
 
 //Screen Constants
+//
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const int SCREEN_FPS = 60;
+/*
 const float HORIZON_HEIGHT = SCREEN_HEIGHT*0.50f;
 
 float playerX = 0.0f;
@@ -36,10 +39,10 @@ void UpdateTextureOffset(float speed)
 		roadTextureOffset -= 4.0f;
 	}
 }
-
+*/
 static bool keys[255];
-std::unique_ptr<ZMap> zMap;
-std::unique_ptr<RoadUpdater> roadUpdater;
+//std::unique_ptr<ZMap> zMap;
+//std::unique_ptr<RoadUpdater> roadUpdater;
 
 
 bool initGL()
@@ -71,7 +74,7 @@ bool initGL()
 
 void update()
 {
-	
+/*	
 	if (keys['a'])
 		playerX -= 5.1f;
 	if (keys['d'])
@@ -89,11 +92,12 @@ void update()
 	speed = std::min(speed, maxSpeed);
 	
 	roadUpdater->Update(speed, playerX);
-
+*/
 }
 
 void render()
 {
+		/*
 	const float h = float(HORIZON_HEIGHT);
 	const float w = float(SCREEN_WIDTH);
 	//Clear color buffer5
@@ -182,6 +186,7 @@ void render()
 	}
 	
 	glutSwapBuffers();
+*/
 }
 
 void runMainLoop(int val);
@@ -189,8 +194,8 @@ void runMainLoop(int val);
 
 int main(int argc, char* args[])
 {
-	zMap.reset(new ZMap(int(HORIZON_HEIGHT)));
-	roadUpdater.reset(new RoadUpdater((int)HORIZON_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH, *zMap));
+//	zMap.reset(new ZMap(int(HORIZON_HEIGHT)));
+//	roadUpdater.reset(new RoadUpdater((int)HORIZON_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH, *zMap));
 
 	//Initialize FreeGLUT
 	glutInit(&argc, args);
@@ -232,14 +237,56 @@ void keyboardUp(unsigned char c, int, int)
 	keys[c] = false;
 }
 
+void update2();
+void render2();
+
 void runMainLoop(int val)
 {
 	//Frame logic
-	update();
-	render();
-
+//	update();
+//	render();
+	update2();
+	render2();
 	//Run frame one more time
 	glutTimerFunc(1000 / SCREEN_FPS, runMainLoop, val);
 	glutKeyboardFunc(keyboardPressed);
 	glutKeyboardUpFunc(keyboardUp);
 }
+
+
+
+
+void update2() {
+
+}
+
+void render2() {
+	const float h = float(SCREEN_HEIGHT*0.5f);
+	const float w = float(SCREEN_WIDTH);
+	//Clear color buffer5
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glBegin(GL_QUADS);
+	glColor3f(0.5f, 0.5f, 0.6f);
+	glVertex2f(-1.0f, -1.0f);
+	glVertex2f(1.0f, -1.0f);
+
+	glColor3f(0.0f, 0.0f, 0.9f);
+	glVertex2f(1.0f, 1.0f);
+	glVertex2f(-1.0f, 1.0f);
+	glEnd();
+
+	glColor3f(0.0f,1.0f,0.0f);	
+
+			glBegin(GL_QUADS);
+			glVertex2f(-10.0f, 0.0f);//SCREEN_HEIGHT);
+			glVertex2f(10.0f, 0.0f);//SCREEN_HEIGHT);
+			glVertex2f(100.0f, -1.0f);//SCREEN_HEIGHT);
+			glVertex2f(-100.0f, -1.0f);//SCREEN_HEIGHT);
+			glEnd();
+
+
+	glutSwapBuffers();
+
+}
+

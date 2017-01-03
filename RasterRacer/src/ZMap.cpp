@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ZMap.h"
 
 ZMap::ZMap(int horizonHeight)

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "RoadSegmentManager.h"
 #include "RoadSegment.h"
 #include <assert.h>

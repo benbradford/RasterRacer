@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "RoadUpdater.h"
 #include "RoadScanLine.h"
 #include "RoadSegmentManager.h"

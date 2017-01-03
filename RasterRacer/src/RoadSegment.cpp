@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "RoadSegment.h"
 #include <algorithm>
 
