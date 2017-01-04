@@ -4,46 +4,20 @@ and may not be redistributed without written permission.*/
 
 
 #include <GL/freeglut.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <stdio.h>
 
-//#include "ZMap.h"
+#include <openGL/gl.h>
+#include <openGL/glu.h>
+#include <stdio.h>
+#include <math.h> 
 #include <iostream>
 #include <vector>
 #include <array>
-//#include "RoadUpdater.h"
-//#include "RoadScanLine.h"
 
-//Screen Constants
-//
-
-const int SCREEN_WIDTH = 400;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1024;
+const int SCREEN_HEIGHT = 768;
 const int SCREEN_FPS = 60;
-/*
-const float HORIZON_HEIGHT = SCREEN_HEIGHT*0.50f;
 
-float playerX = 0.0f;
-float distance = 0.0f;
-float speedAmount = 0.018f;
-float maxSpeed = 1.0f;
-float speed = 0.0f;
-float roadTextureOffset = 0.0f;
-
-void UpdateTextureOffset(float speed)
-{
-	roadTextureOffset += speed;
-	if (roadTextureOffset > 4.0f)
-	{
-		roadTextureOffset -= 4.0f;
-	}
-}
-*/
 static bool keys[255];
-//std::unique_ptr<ZMap> zMap;
-//std::unique_ptr<RoadUpdater> roadUpdater;
-
 
 bool initGL()
 {
@@ -62,7 +36,7 @@ bool initGL()
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR)
 	{
-		printf("Error initializing OpenGL! %s\n", gluErrorString(error));
+		//printf("Error initializing OpenGL! %s\n", gluErrorString(error));
 		return false;
 	}
 
@@ -72,142 +46,23 @@ bool initGL()
 	return true;
 }
 
-void update()
-{
-/*	
-	if (keys['a'])
-		playerX -= 5.1f;
-	if (keys['d'])
-		playerX += 5.1f;
-
-	if (keys['w'])
-		speed += speedAmount;
-	if (keys['s'])
-		speed -= (speedAmount * 1.3f);
-	//else
-	//	speed = 0.0f;
-	
-	speed -= (speedAmount * 0.1f);
-	speed = std::max(speed, 0.0f);
-	speed = std::min(speed, maxSpeed);
-	
-	roadUpdater->Update(speed, playerX);
-*/
-}
-
-void render()
-{
-		/*
-	const float h = float(HORIZON_HEIGHT);
-	const float w = float(SCREEN_WIDTH);
-	//Clear color buffer5
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glBegin(GL_QUADS);
-	glColor3f(0.5f, 0.5f, 0.6f);
-	glVertex2f(-1.0f, -1.0f);
-	glVertex2f(1.0f, -1.0f);
-
-	glColor3f(0.0f, 0.0f, 0.9f);
-	glVertex2f(1.0f, 1.0f);
-	glVertex2f(-1.0f, 1.0f);
-	glEnd();
-
-	static const float grassColour[2][3] =
-	{
-		{ 0.2f, 1.0f, 0.2f }, { 0.2f, 1.0f, 0.2f }
-		//{0.1f,0.96f,0.2f}
-	};
-	static const float roadColour[2][3] =
-	{
-		{ 0.7f, 0.7f, 0.7f }, { 0.7f, 0.7f, 0.7f }
-		//{ 0.6f, 0.6f, 0.6f }
-	};
-
-	int maxScanLines = 0;
-	auto roadParts = roadUpdater->GetScanLines(maxScanLines);
-	float lastMinRoadX = 0.0f;
-	float lastMaxRoadX = 0.0f;
-	float lastRoadY = -1.0f;
-	float lastMinLineX = 0.0f;
-	float lastMaxLineX = 0.0f;
-	for (int i = maxScanLines-1; i >= 0; --i)
-	{
-		if (roadParts[i].draw)
-		{
-
-			glColor3f(grassColour[roadParts[i].roadFrame][0], grassColour[roadParts[i].roadFrame][1], grassColour[roadParts[i].roadFrame][2]);
-
-
-			float y = ((float(h - roadParts[i].screenYInt) / h));
-			
-
-			glBegin(GL_QUADS);
-			glVertex2f(-1.0f, y);
-			glVertex2f(1.0f, y);
-			glVertex2f(1.0f, lastRoadY);
-			glVertex2f(-1.0f, lastRoadY);
-			glEnd();
-
-			glColor3f(roadColour[roadParts[i].roadFrame][0], roadColour[roadParts[i].roadFrame][1], roadColour[roadParts[i].roadFrame][2]);
-
-			const float centerX = -1.0f + ((roadParts[i].screenX / w) * 2.0f);
-			const float minX = centerX - roadParts[i].scale;
-			const float maxX = centerX + roadParts[i].scale;
-			glBegin(GL_QUADS);
-			glVertex2f(minX, y);
-			glVertex2f(maxX, y);
-			glVertex2f(lastMaxRoadX, lastRoadY);
-			glVertex2f(lastMinRoadX, lastRoadY);
-			glEnd();
-			lastMinRoadX = minX;
-			lastMaxRoadX = maxX;
-
-			const float lineScale = roadParts[i].scale * 0.02f;
-			const float lineminX = centerX - lineScale;
-			const float linemaxX = centerX + lineScale;
-			if (roadParts[i].roadFrame)
-			{
-
-				glBegin(GL_QUADS);
-				
-				glColor3f(1.0f, 1.0f, 1.0f);
-				glVertex2f(lineminX, y);
-				glVertex2f(linemaxX, y);
-				glVertex2f(lastMaxLineX, lastRoadY);
-				glVertex2f(lastMinLineX, lastRoadY);
-				glEnd();
-			}
-			lastMinLineX = lineminX;
-			lastMaxLineX = linemaxX;
-			lastRoadY = y;
-		}
-		
-	}
-	
-	glutSwapBuffers();
-*/
-}
 
 void runMainLoop(int val);
 
+void update2();
+void render2();
+void init();
+int window = -1;
 
 int main(int argc, char* args[])
 {
-//	zMap.reset(new ZMap(int(HORIZON_HEIGHT)));
-//	roadUpdater.reset(new RoadUpdater((int)HORIZON_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH, *zMap));
-
-	//Initialize FreeGLUT
 	glutInit(&argc, args);
-
-	//Create OpenGL 2.1 context
-	glutInitContextVersion(2, 1);
-
-	//Create Double Buffered Window
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEP);
+	
 	glutInitDisplayMode(GLUT_DOUBLE);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	glutCreateWindow("OpenGL");
-
+	window = glutCreateWindow("OpenGL");
+	
 	//Do post window/context creation initialization
 	if (!initGL())
 	{
@@ -215,8 +70,10 @@ int main(int argc, char* args[])
 		return 1;
 	}
 
+	init();
+
 	//Set rendering function
-	glutDisplayFunc(render);
+	glutDisplayFunc(render2);
 
 	//Set main loop
 	glutTimerFunc(1000 / SCREEN_FPS, runMainLoop, 0);
@@ -229,6 +86,11 @@ int main(int argc, char* args[])
 
 void keyboardPressed(unsigned char c, int , int )
 {
+	if (c == 27) {
+
+		glutDestroyWindow(window);
+		exit(0);
+	}
 	keys[c] = true;
 }
 
@@ -237,14 +99,8 @@ void keyboardUp(unsigned char c, int, int)
 	keys[c] = false;
 }
 
-void update2();
-void render2();
-
 void runMainLoop(int val)
 {
-	//Frame logic
-//	update();
-//	render();
 	update2();
 	render2();
 	//Run frame one more time
@@ -253,15 +109,138 @@ void runMainLoop(int val)
 	glutKeyboardUpFunc(keyboardUp);
 }
 
-	struct Line {
-		float x;
-		float y;
-		float z;
-	};
-	std::vector<Line> lines;
-	
+float width = SCREEN_WIDTH;
+float height = SCREEN_HEIGHT;
+int roadW = 2000;
+int segL = 200; //segment length
+float camD = 0.84; //camera depth
 
-	auto startPos = 0.0f;
+struct Color { 
+	float r; float g; float b;
+
+	Color( int rr, int gg, int bb) : r(rr/255.f), g(gg/255.f), b(bb/255.f) {}
+};
+
+void drawQuad(float r, float g, float b, float x1,float y1,float w1,float x2,float y2,float w2, bool print)
+{
+	glColor3f(r,g,b);	
+
+	const auto xPos1 = (1.0f * float(x1 / width));
+	const auto xPos2 = (1.0f * float(x2 / width));
+	const auto yPos1 = 1.0f - (2.0f * float(y1 / height));
+	const auto yPos2 = 1.0f - (2.0f * float(y2 / height));
+	const auto width1 = float(w1 / width);
+	const auto width2 = float(w2 / width);
+
+	//glBegin(GL_QUADS);
+	//	glVertex2f(xPos1-width1, yPos1);
+	//	glVertex2f(xPos2-width2, yPos2);
+	//	glVertex2f(xPos2+width2, yPos2);
+	//	glVertex2f(xPos1+width1, yPos1);
+	//glEnd();
+
+	glBegin(GL_QUADS);
+		glVertex2f(xPos1-width1,yPos1);
+		glVertex2f(xPos1+width1,yPos1);
+		glVertex2f(xPos2+width2,yPos2);
+		glVertex2f(xPos2-width2,yPos2);
+	glEnd();
+
+	if (print) {
+
+		printf("%f %f %f, %f %f %f |||  %f %f %f, %f %f %f ||| %.2f %.2f %.2f\n", x1,y1,w1, x2,y2,w2, xPos1,yPos1,width1, xPos2,yPos2,width2, r,g,b);
+	}
+}
+
+void drawQuad(const Color& c, float x1,float y1,float w1,float x2,float y2,float w2, bool print) {
+
+	drawQuad(c.r,c.g,c.b, x1,y1,w1,x2,y2,w2, print);
+}
+
+struct Line
+{
+  float x,y,z; //3d center of line
+  float X,Y,W; //screen coord
+  float curve,spriteX,clip,scale;
+ 
+  Line()
+  {spriteX=curve=x=y=z=0;}
+
+  void project(int camX,int camY,int camZ)
+  {
+    scale = camD/(z-camZ);
+    X = (1 + scale*(x - camX)) * width/2;
+    Y = (1 - scale*(y - camY)) * height/2;
+    W = scale * roadW  * width/2;
+  }
+
+/*
+  void drawSprite(RenderWindow &app)
+  {
+    Sprite s = sprite;
+    int w = s.getTextureRect().width;
+    int h = s.getTextureRect().height;
+
+    float destX = X + scale * spriteX * width/2;
+    float destY = Y + 4;
+    float destW  = w * W / 266;
+    float destH  = h * W / 266;
+
+    destX += destW * spriteX; //offsetX
+    destY += destH * (-1);    //offsetY
+
+    float clipH = destY+destH-clip;
+    if (clipH<0) clipH=0;
+
+    if (clipH>=destH) return;
+    s.setTextureRect(IntRect(0,0,w,h-h*clipH/destH));
+    s.setScale(destW/w,destH/h);
+    s.setPosition(destX, destY);
+    app.draw(s);
+    }
+    */
+};
+
+std::vector<Line> lines;
+int N;// = lines.size();
+float playerX;// = 0;
+int pos;// = 0;
+int H;// = 1500;
+int speed;//=0;
+int startPos;// = pos/segL;
+
+void init()
+{
+    
+
+
+    for(int i=0;i<1600;i++)
+     {
+       Line line;
+       line.z = i*segL;
+
+       if (i>300 && i<700) line.curve=0.5;
+       if (i>1100) line.curve=-0.7;
+
+       if (i<300 && i%20==0) {line.spriteX=-2.5;};// line.sprite=object[5];}
+       if (i%17==0)          {line.spriteX=2.0;};// line.sprite=object[6];}
+       if (i>300 && i%20==0) {line.spriteX=-0.7;};// line.sprite=object[4];}
+       if (i>800 && i%20==0) {line.spriteX=-1.2;};// line.sprite=object[1];}
+       if (i==400)           {line.spriteX=-1.2;};// line.sprite=object[7];}
+
+       if (i>750) line.y = sin(i/30.0)*1500;
+
+       lines.push_back(line);
+     }
+
+     N = lines.size();
+	playerX = 0;
+	pos = 0;
+	H = 1500;
+	speed=0;
+	startPos = pos/segL;  
+}
+
 
 void update2() {
 
@@ -272,31 +251,14 @@ void update2() {
 
 		startPos--;
 	}
+
+
 }
 
 void render2() {
 
 
-   const auto camDepth = 0.84f;
-   const auto segL = 200;
-   const auto roadW = 2000;
-   const auto camX = 0.0f;
-   const auto width = SCREEN_WIDTH;
-   const auto height = SCREEN_HEIGHT;
-
-   static bool first = true;
-	if (first) {
-
-		
-		for (auto i = 0u; i < 200; ++i) {
-			
-				lines.push_back({0.01f,0.0f,float(i*segL)});
-		}
-		for (auto i = 0u; i < 300; ++i) {
-			
-				lines.push_back({-0.01f,0.0f,float(i*segL)});
-		}
-	}
+ 
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glBegin(GL_QUADS);
@@ -309,7 +271,7 @@ void render2() {
 	glVertex2f(-1.0f, 1.0f);
 	glEnd();
 
-	glColor3f(0.0f,1.0f,0.0f);	
+	/*glColor3f(0.0f,1.0f,0.0f);	
 
 	glBegin(GL_QUADS);
 		glVertex2f(-1.0f, 0.2f);//SCREEN_HEIGHT);
@@ -317,11 +279,74 @@ void render2() {
 		glVertex2f(1.0f, -1.0f);//SCREEN_HEIGHT);
 		glVertex2f(-1.0f, -1.0f);//SCREEN_HEIGHT);
 	glEnd();
+	*/
+	//drawQuad(0.0f,1.0f,0.0f, 0,SCREEN_HEIGHT/2.0f,SCREEN_WIDTH, 0, 0, SCREEN_WIDTH);
+	//drawQuad(0.0f,1.0f,0.0f, 
+	//	10, 10, width - 20, 
+	//	10, height - 10, width - 20);
+	//glBegin(GL_QUADS);
+	//	glVertex2f(-0.2f,-0.2f);
+	//	glVertex2f(0.2f,-0.2f);
+	//	glVertex2f(0.2f,0.2f);
+	//	glVertex2f(-0.2f,0.2f);
+	//glEnd();
+	//glColor3f(0.5f,0.5f,0.5f);
 
+static bool first = false;
+   
+	
+  if (keys['d']) playerX+=0.1;
+  if (keys['a']) playerX-=0.1;
+  if (keys['w']) speed=200;
+  if (keys['s']) speed=-200;
+  if (keys['k']) speed*=3;
+  if (keys['e']) H+=100;
+  if (keys['q']) H-=100;
+  if (keys['g']) speed = 0;
+  if (keys['p']) first = true;
+  
+  pos+=speed;
+  while (pos >= N*segL) pos-=N*segL;
+  while (pos < 0) pos += N*segL;
 
-	glColor3f(0.5f,0.5f,0.5f);
+ // app.clear(Color(105,205,4));
+ // app.draw(sBackground);
+  int startPos = pos/segL;
+  int camH = lines[startPos].y + H;
+  //if (speed>0) sBackground.move(-lines[startPos].curve*2,0);
+  //if (speed<0) sBackground.move( lines[startPos].curve*2,0);
 
-	auto lastX = 0.0f;
+  int maxy = height;
+  float x=0,dx=0;
+
+  ///////draw road////////
+   
+  for(int n = startPos; n<startPos+300; n++)  
+   {
+    Line &l = lines[n%N];
+    l.project(playerX*roadW*2-x, camH, startPos*segL - (n>=N?N*segL:0));
+    x+=dx;
+    dx+=l.curve;
+
+    l.clip=maxy;
+    if (l.Y>=maxy) continue;
+    maxy = l.Y;
+
+    Color grass  = (n/3)%2?Color(16,200,16):Color(0,154,0);
+    Color rumble = (n/3)%2?Color(255,255,255):Color(0,0,0);
+    Color road   = (n/3)%2?Color(107,107,107):Color(105,105,105);
+
+    Line p = lines[(n-1)%N]; //previous line
+    if (first) printf("%i -> ", n);
+    drawQuad(grass, 0, p.Y, width, 0, l.Y, width, false);
+    drawQuad(rumble,p.X, p.Y, p.W*1.2, l.X, l.Y, l.W*1.2, false);
+    drawQuad(road,  p.X, p.Y, p.W, l.X, l.Y, l.W, first);
+    
+   }
+   if (first) printf("\n\n\n");
+	first = false;
+
+	/*auto lastX = 0.0f;
 	auto lastY = 0.0f;
 	auto lastW = 0.0f;
 	const auto camH = 1000.f;
@@ -366,11 +391,10 @@ void render2() {
 		lastX = renderX;
 		lastY = renderY;
 		lastW = renderW;
-	}
+	}*/
 
 
 	glutSwapBuffers();
 
-	first = false;
 }
 
