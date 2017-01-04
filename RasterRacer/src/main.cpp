@@ -80,8 +80,9 @@ int main()
     bg.loadFromFile("../images/bg.png");
     bg.setRepeated(true);
     Sprite sBackground(bg);
-    sBackground.setTextureRect(IntRect(0,0,500000,411));
-    sBackground.setPosition(-2000,0);
+    sBackground.setTextureRect(IntRect(-500000,0,1000000,411));
+    sBackground.setPosition(-50000,0);
+    sBackground.setScale(1.0f,0.6f);
     Texture carTexture;
     carTexture.loadFromFile("../images/car.png");
     carTexture.setSmooth(true);
@@ -90,22 +91,38 @@ int main()
 
     std::vector<Line> lines;
 
-    for(int i=0;i<1600;i++)
+    for(int i=0;i<2200;i++)
      {
        Line line;
        line.z = i*segL;
 
        if (i>300 && i<700) line.curve=2.5;
-       if (i>1100) line.curve=-0.7;
+       if (i>1100) line.curve=-1.8;
 
        if (i<300 && i%20==0) {line.spriteX=-2.5; line.sprite=object[5];}
        if (i%17==0)          {line.spriteX=2.0; line.sprite=object[6];}
        if (i>300 && i%20==0) {line.spriteX=-0.7; line.sprite=object[4];}
        if (i>800 && i%20==0) {line.spriteX=-1.2; line.sprite=object[1];}
-       if (i==400)           {line.spriteX=-1.2; line.sprite=object[7];}
+       if (i==400)           {line.spriteX=-1.5; line.sprite=object[7];}
 
-       if (i>750) line.y = sin(i/30.0)*1500;
+       if (i>750 && i < 1600) line.y = sin(i/30.0)*1500;
 
+       if (i > 1600) {
+
+          if (i < 1800) {
+            //line.y = i - 1800 * 20.0f;
+            line.y = lines.back().y-80.1f;
+            line.curve = +3.0f;
+          } else if (i < 2000) {
+            //line.y = i - 2000 * 20.0f;
+            line.y = lines.back().y+100.1f;
+            line.curve = -3.0f;
+          }
+          else if (i < 2200) {
+            line.y = lines.back().y-=20.0f;
+            line.curve = -1.5f;
+          }
+       }
        lines.push_back(line);
      }
 
@@ -124,9 +141,9 @@ int main()
                 app.close();
         }
 
-  
-  if (Keyboard::isKeyPressed(Keyboard::Right)) turn+=0.000002f * speed;
-  if (Keyboard::isKeyPressed(Keyboard::Left)) turn-=0.000002f * speed;
+  const float autoTurn = speed > 20.0f ? 0.0004f : 0.0f;
+  if (Keyboard::isKeyPressed(Keyboard::Right)) turn+=autoTurn + 0.000005f * speed*0.3f;
+  if (Keyboard::isKeyPressed(Keyboard::Left)) turn-=autoTurn + 0.000005f * speed*0.3f;
   if (Keyboard::isKeyPressed(Keyboard::Up)) speed+=5.f;
   if (Keyboard::isKeyPressed(Keyboard::Down)) speed-=1.f;
   //if (Keyboard::isKeyPressed(Keyboard::Tab)) speed*=3;
@@ -136,7 +153,7 @@ int main()
 
   playerX+=turn;
   turn*=0.95f;
-  speed *=0.995f;
+  speed *=0.997f - turn * 0.1f;
   speed = speed > 600 ? 600 : speed;
 
   pos+=speed;
@@ -200,7 +217,7 @@ int main()
 
       texStartY = 45;
 
-    } if (absTurn > 0.02f) {
+    } if (absTurn > 0.025f) {
 
       texStartY = 90;
 
