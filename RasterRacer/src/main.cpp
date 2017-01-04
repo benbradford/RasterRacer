@@ -1,8 +1,8 @@
 #include <SFML/Graphics.hpp>
 using namespace sf;
 #include <math.h>
-int width = 400;
-int height = 768;
+int width = 550;
+int height = 1000;
 int roadW = 5000;
 int segL = 200; //segment length
 float camD = 0.84; //camera depth
@@ -22,11 +22,12 @@ struct Line
 {
   float x,y,z; //3d center of line
   float X,Y,W; //screen coord
+  float hill;
   float curve,spriteX,clip,scale;
   Sprite sprite;
 
   Line()
-  {spriteX=curve=x=y=z=0;}
+  {spriteX=curve=x=y=z=hill=0;}
 
   void project(int camX,int camY,int camZ)
   {
@@ -82,7 +83,7 @@ int main()
     Sprite sBackground(bg);
     sBackground.setTextureRect(IntRect(-500000,0,1000000,411));
     sBackground.setPosition(-50000,0);
-    sBackground.setScale(1.0f,0.6f);
+    sBackground.setScale(1.0f,0.75f);
     Texture carTexture;
     carTexture.loadFromFile("../images/car.png");
     carTexture.setSmooth(true);
@@ -91,7 +92,7 @@ int main()
 
     std::vector<Line> lines;
 
-    for(int i=0;i<2200;i++)
+    for(int i=0;i<2400;i++)
      {
        Line line;
        line.z = i*segL;
@@ -99,10 +100,10 @@ int main()
        if (i>300 && i<700) line.curve=2.5;
        if (i>1100) line.curve=-1.8;
 
-       if (i<300 && i%20==0) {line.spriteX=-2.5; line.sprite=object[5];}
-       if (i%17==0)          {line.spriteX=2.0; line.sprite=object[6];}
-       if (i>300 && i%20==0) {line.spriteX=-0.7; line.sprite=object[4];}
-       if (i>800 && i%20==0) {line.spriteX=-1.2; line.sprite=object[1];}
+       if (i<600 && i%20==0) {line.spriteX=-2.5; line.sprite=object[5];}
+       if (i%17==0)          {line.spriteX=1.2; line.sprite=object[6];}
+       if (i>600 && i%20==0) {line.spriteX=-0.7; line.sprite=object[4];}
+       if (i>1200 && i%20==0) {line.spriteX=-1.2; line.sprite=object[1];}
        if (i==400)           {line.spriteX=-1.5; line.sprite=object[7];}
 
        if (i>750 && i < 1600) line.y = sin(i/30.0)*1500;
@@ -111,16 +112,20 @@ int main()
 
           if (i < 1800) {
             //line.y = i - 1800 * 20.0f;
-            line.y = lines.back().y-80.1f;
-            line.curve = +3.0f;
+            line.hill = 0.6f;
+            
           } else if (i < 2000) {
             //line.y = i - 2000 * 20.0f;
-            line.y = lines.back().y+100.1f;
-            line.curve = -3.0f;
+            line.hill = 0.6f;
+            line.curve = +3.0f;
           }
           else if (i < 2200) {
-            line.y = lines.back().y-=20.0f;
-            line.curve = -1.5f;
+            //line.y = 2.f;
+            line.hill = -1.5f;
+            line.curve = -3.0f;
+          } else if ( i < 2400) {
+
+            line.hill = 1.2f;
           }
        }
        lines.push_back(line);
@@ -169,22 +174,25 @@ int main()
 
   int maxy = height;
   float x=0,dx=0;
+  float y=0, dy=0;
 
   ///////draw road////////
   for(int n = startPos; n<startPos+300; n++)  
    {
     Line &l = lines[n%N];
-    l.project(playerX*roadW-x, camH, startPos*segL - (n>=N?N*segL:0));
+    l.project(playerX*roadW-x, camH+y, startPos*segL - (n>=N?N*segL:0));
     x+=dx;
     dx+=l.curve;
+    y+=dy;
+    dy+=l.hill;
 
     l.clip=maxy;
     if (l.Y>=maxy) continue;
     maxy = l.Y;
 
-    Color grass  = (n%14<7)?Color(16,200,16):Color(0,154,0);
-    Color rumble = (n%14<7)?Color(255,255,255):Color(0,0,0);
-    Color road   = (n%14<7)?Color(107,107,107):Color(105,105,105);
+    Color grass  = (n%14<7)?Color(16,200,16):Color(5,180,5);
+    Color rumble = (n%14<7)?Color(225,225,225):Color(10,10,10);
+    Color road   = (n%14<7)?Color(107,107,107):Color(103,103,103);
 
     Color line = (n%14<5) ? road : Color(200,200,200);
 
@@ -228,12 +236,13 @@ int main()
     carObject.setTextureRect(IntRect(0,texStartY,w,texEndY));
 
     //carObject.setOrigin(carObject.getLocalBounds().width, 0 );
+    const float scale = 4.0f;
     if (turn >= 0.0f) {
-      carObject.setScale(3.f,3.f);
-      carObject.setPosition(width*0.5f-(w*3)/2, height-150);
+      carObject.setScale(scale,scale);
+      carObject.setPosition(width*0.5f-(w*scale)/2, height-200);
     } else {
-        carObject.setScale(-3.f,3.f);
-        carObject.setPosition(width*0.5f+(w*3)/2, height-150);
+        carObject.setScale(-scale,scale);
+        carObject.setPosition(width*0.5f+(w*scale)/2, height-200);
     }
     app.draw(carObject);
 
