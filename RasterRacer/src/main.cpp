@@ -92,7 +92,7 @@ int main()
 
     std::vector<Line> lines;
 
-    for(int i=0;i<2400;i++)
+    for(int i=0;i<3300;i++)
      {
        Line line;
        line.z = i*segL;
@@ -127,6 +127,19 @@ int main()
 
             line.hill = 1.2f;
           }
+          else if (i > 2700) {
+
+              if (i < 2750) {
+
+                line.curve = 5.0f;
+              } else if (i < 2800) {
+                line.curve = -5.0f;
+              }
+              else if (i < 3300) {
+                line.curve = 1.0f;
+              }
+
+          }
        }
        lines.push_back(line);
      }
@@ -137,6 +150,8 @@ int main()
    int H = 1500;
    int speed=0;
    float turn = 0.0f;
+   float lastY = 0.0f;
+   bool drifting = false;
     while (app.isOpen())
     {
         Event e;
@@ -146,9 +161,13 @@ int main()
                 app.close();
         }
 
-  const float autoTurn = speed > 20.0f ? 0.0004f : 0.0f;
-  if (Keyboard::isKeyPressed(Keyboard::Right)) turn+=autoTurn + 0.000005f * speed*0.3f;
-  if (Keyboard::isKeyPressed(Keyboard::Left)) turn-=autoTurn + 0.000005f * speed*0.3f;
+  const float autoTurn = speed > 20.0f ? 0.0006f : 0.0f;
+  if (Keyboard::isKeyPressed(Keyboard::V)) drifting = false;
+  if (Keyboard::isKeyPressed(Keyboard::B)) drifting = true;
+
+  const float turnSpeed = autoTurn+ (drifting ? 0.000006f : 0.0000015f) * speed*0.2f;
+  if (Keyboard::isKeyPressed(Keyboard::Right)) turn+=turnSpeed;
+  if (Keyboard::isKeyPressed(Keyboard::Left)) turn-=turnSpeed;
   if (Keyboard::isKeyPressed(Keyboard::Up)) speed+=5.f;
   if (Keyboard::isKeyPressed(Keyboard::Down)) speed-=1.f;
   //if (Keyboard::isKeyPressed(Keyboard::Tab)) speed*=3;
@@ -156,9 +175,12 @@ int main()
   if (Keyboard::isKeyPressed(Keyboard::S)) H-=100;
   if (Keyboard::isKeyPressed(Keyboard::Escape)) app.close();
 
+
   playerX+=turn;
-  turn*=0.95f;
-  speed *=0.997f - turn * 0.1f;
+  playerX = playerX > 1.5f ? 1.5f : playerX;
+  playerX = playerX < -1.5f ? -1.5f : playerX;
+  turn*= drifting? 0.99f : 0.95f;
+  speed *=0.997f - turn * (drifting ? 0.05f : 0.2f);
   speed = speed > 600 ? 600 : speed;
 
   pos+=speed;
@@ -209,9 +231,21 @@ int main()
     drawQuad(app, line, p.X+p.W*0.25f,p.Y,pw, l.X+l.W*0.25f,l.Y,lw);
    }
 
-   playerX -= lines[startPos%N].curve * speed * 0.00002f;
+   if (startPos > 0) {
+      float jumpDiff = lastY - lines[(startPos+1)%N].Y;
+        //printf(">%.2f\n", jumpDiff);
+  }
+  lastY = lines[startPos+1%N].Y;
+
+  const float pullSpeed = lines[startPos%N].curve * speed * (drifting ? 0.00004f : 0.000025f);
+   playerX -= pullSpeed;
    if (fabsf(playerX) > 0.97f) {
-      speed *=0.99f;
+      speed *=0.98f;
+      if (playerX > 0.0f) {
+        turn -=0.001f;
+      } else {
+        turn +=0.001f;
+      }
    } 
 
     ////////draw objects////////
@@ -225,7 +259,7 @@ int main()
 
       texStartY = 45;
 
-    } if (absTurn > 0.025f) {
+    } if (absTurn > 0.03f) {
 
       texStartY = 90;
 
@@ -239,10 +273,10 @@ int main()
     const float scale = 4.0f;
     if (turn >= 0.0f) {
       carObject.setScale(scale,scale);
-      carObject.setPosition(width*0.5f-(w*scale)/2, height-200);
+      carObject.setPosition(width*0.5f-(w*scale)/2, height-300);
     } else {
         carObject.setScale(-scale,scale);
-        carObject.setPosition(width*0.5f+(w*scale)/2, height-200);
+        carObject.setPosition(width*0.5f+(w*scale)/2, height-300);
     }
     app.draw(carObject);
 
