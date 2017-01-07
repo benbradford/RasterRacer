@@ -11,11 +11,7 @@ endif()
 
 project(myproject)
 
-# Set version information in a config.h file
-set(myproject_VERSION_MAJOR 1)
-set(myproject_VERSION_MINOR 0)
-
-include_directories("${PROJECT_BINARY_DIR}")
+include_directories("${PROJECT_BINARY_DIR}../inc/")
 
 # Define sources and executable
 set(EXECUTABLE_NAME "myproject")
